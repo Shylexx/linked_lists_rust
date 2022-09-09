@@ -55,7 +55,22 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-
+impl<T> Drop for List<T> {
+    fn drop(&mut self) {
+        // Gets the next link of the current node
+        let mut head = self.head.take();
+        // Iterate through the list of nodes when the list is dropped and 
+        // set all of the enums to None, dropping the inside values
+        // iteratively not recursively and so all values held are dropped
+        while let Some(node) = head {
+            if let Ok(mut node) = Rc::try_unwrap(node) {
+                head = node.next.take();
+            } else {
+                break;
+            }
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
