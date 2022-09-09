@@ -21,7 +21,7 @@ impl List {
     pub fn push(&mut self, elem: i32) {
         let new_node = Box::new(Node {
             elem: elem,
-            next: mem::replace(&mut self.head, Link::Empty)
+            next: mem::replace(&mut self.head, Link::Empty),
         });
 
         self.head = Link::More(new_node);
@@ -59,7 +59,7 @@ mod test {
     #[test]
     fn basics() {
         let mut list = List::new();
-        
+
         // check Empty list behaves correctly
         assert_eq!(list.pop(), None);
 

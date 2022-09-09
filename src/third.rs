@@ -17,14 +17,18 @@ impl<T> List<T> {
     }
     // Add element to the start of the list
     pub fn prepend(&self, elem: T) -> List<T> {
-        List { head: Some(Arc::new(Node {
-            elem,
-            next: self.head.clone(),
-        }))}
+        List {
+            head: Some(Arc::new(Node {
+                elem,
+                next: self.head.clone(),
+            })),
+        }
     }
     // Removes the first element and returns the new list
     pub fn tail(&self) -> List<T> {
-        List { head: self.head.as_ref().and_then(|node| node.next.clone()) }
+        List {
+            head: self.head.as_ref().and_then(|node| node.next.clone()),
+        }
     }
     // Returns a reference to the first element. (same as peek)
     pub fn head(&self) -> Option<&T> {
@@ -40,7 +44,9 @@ pub struct Iter<'a, T> {
 
 impl<T> List<T> {
     pub fn iter(&self) -> Iter<'_, T> {
-        Iter { next: self.head.as_deref() }
+        Iter {
+            next: self.head.as_deref(),
+        }
     }
 }
 
@@ -59,7 +65,7 @@ impl<T> Drop for List<T> {
     fn drop(&mut self) {
         // Gets the next link of the current node
         let mut head = self.head.take();
-        // Iterate through the list of nodes when the list is dropped and 
+        // Iterate through the list of nodes when the list is dropped and
         // set all of the enums to None, dropping the inside values
         // iteratively not recursively and so all values held are dropped
         while let Some(node) = head {
@@ -83,7 +89,7 @@ mod test {
 
         let list = list.prepend(1).prepend(2).prepend(3);
         assert_eq!(list.head(), Some(&3));
-        
+
         let list = list.tail();
         assert_eq!(list.head(), Some(&2));
 
