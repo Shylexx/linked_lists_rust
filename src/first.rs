@@ -37,6 +37,21 @@ impl List {
     }
 }
 
+impl Drop for List {
+    fn drop(&mut self) {
+        // Take the head value and replace with empty value
+        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+        while let Link::More(mut boxed_node) = cur_link {
+            // While the current link in the iteration is another Node,
+            // replace the boxed node with Empty
+            cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
+            // boxed_node goes out of scope and gets dropped here;
+            // but its Node's next field has been set to Link::Empty
+            // so no unbounded recursion happens
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::List;
