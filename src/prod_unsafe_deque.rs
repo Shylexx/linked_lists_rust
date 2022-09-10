@@ -27,7 +27,7 @@ pub struct IterMut<'a, T> {
     front: Link<T>,
     back: Link<T>,
     len: usize,
-    _boo: PhantomData<&'a mut T>,
+    _boo: PhantomData<&'a T>,
 }
 
 pub struct IntoIter<T> {
@@ -411,6 +411,28 @@ impl<T: Hash> Hash for LinkedList<T> {
     }
 }
 
+
+// Send + Sync Traits
+// We opted out of these by using *const/*mut unsafe pointers
+// These opts back in
+//
+unsafe impl<T: Send> Send for LinkedList<T> {}
+unsafe impl<T: Sync> Sync for LinkedList<T> {}
+
+unsafe impl<'a, T: Send> Send for Iter<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for Iter<'a, T> {}
+
+unsafe impl<'a, T: Send> Send for IterMut<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for IterMut<'a, T> {}
+
+// Using Rust Doc to test that Itermut is covariant
+/// ```compile_fail
+/// use linked_list::IterMut;
+/// 
+/// fn iter_mut_covariant<'i, 'a, T>(x: IterMut<'i, &'static T>) -> IterMut<'i, &'a T> { x }
+/// ```
+#[allow(dead_code)]
+fn iter_mut_invariant() {}
 
 #[cfg(test)]
 mod test {
