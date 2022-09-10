@@ -24,6 +24,9 @@ impl<T> LinkedList<T> {
             _boo: PhantomData,
         }
     }
+    pub fn len(&self) -> usize {
+        self.len
+    }
     pub fn push_front(&mut self, elem: T) {
         unsafe {
             let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node {
