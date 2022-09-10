@@ -147,14 +147,14 @@ impl<T> LinkedList<T> {
         self.len == 0
     }
     pub fn clear(&mut self) {
-        while let Some(_) = self.pop_front() {}
+        while self.pop_front().is_some() {}
     }
 }
 
 impl<T> Drop for LinkedList<T> {
     fn drop(&mut self) {
         // Pop until we have to stop
-        while let Some(_) = self.pop_front() {}
+        while self.pop_front().is_some() {}
     }
 }
 
@@ -222,18 +222,12 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T> {
 
 // Into Iter impl
 
-impl<T> LinkedList<T> {
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter { list: self }
-    }
-}
-
 impl<T> IntoIterator for LinkedList<T> {
     type IntoIter = IntoIter<T>;
     type Item = T;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.into_iter()
+        IntoIter { list: self }
     }
 }
 
@@ -368,10 +362,6 @@ impl<T: PartialEq> PartialEq for LinkedList<T> {
     // to iterate over the lists to find if they are equal
     fn eq(&self, other: &Self) -> bool {
         self.len() == other.len() && self.iter().eq(other)
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        self.len() != other.len() || self.iter().ne(other)
     }
 }
 
@@ -995,7 +985,7 @@ mod test {
         assert!(map.is_empty());
     }
 
-     #[test]
+    #[test]
     fn test_cursor_move_peek() {
         let mut m: LinkedList<u32> = LinkedList::new();
         m.extend([1, 2, 3, 4, 5, 6]);
@@ -1045,15 +1035,21 @@ mod test {
         cursor.splice_before(Some(7).into_iter().collect());
         cursor.splice_after(Some(8).into_iter().collect());
         // check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), &[7, 1, 8, 2, 3, 4, 5, 6]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            &[7, 1, 8, 2, 3, 4, 5, 6]
+        );
         let mut cursor = m.cursor_mut();
         cursor.move_next();
         cursor.move_prev();
         cursor.splice_before(Some(9).into_iter().collect());
         cursor.splice_after(Some(10).into_iter().collect());
         check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), &[10, 7, 1, 8, 2, 3, 4, 5, 6, 9]);
-        
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            &[10, 7, 1, 8, 2, 3, 4, 5, 6, 9]
+        );
+
         /* remove_current not impl'd
         let mut cursor = m.cursor_mut();
         cursor.move_next();
@@ -1102,9 +1098,15 @@ mod test {
         cursor.move_next();
         cursor.move_next();
         let tmp = cursor.split_after();
-        assert_eq!(tmp.into_iter().collect::<Vec<_>>(), &[102, 103, 8, 2, 3, 4, 5, 6]);
+        assert_eq!(
+            tmp.into_iter().collect::<Vec<_>>(),
+            &[102, 103, 8, 2, 3, 4, 5, 6]
+        );
         check_links(&m);
-        assert_eq!(m.iter().cloned().collect::<Vec<_>>(), &[200, 201, 202, 203, 1, 100, 101]);
+        assert_eq!(
+            m.iter().cloned().collect::<Vec<_>>(),
+            &[200, 201, 202, 203, 1, 100, 101]
+        );
     }
 
     fn check_links<T: Eq + std::fmt::Debug>(list: &LinkedList<T>) {
