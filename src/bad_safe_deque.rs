@@ -139,7 +139,7 @@ impl<T> List<T> {
 
 impl<T> Iterator for IntoIter<T> {
     type Item = T;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         self.0.pop_front()
     }
@@ -231,7 +231,9 @@ mod test {
     #[test]
     fn into_iter() {
         let mut list = List::new();
-        list.push_front(1); list.push_front(2); list.push_front(3);
+        list.push_front(1);
+        list.push_front(2);
+        list.push_front(3);
 
         let mut iter = list.into_iter();
         assert_eq!(iter.next(), Some(3));
@@ -240,5 +242,4 @@ mod test {
         assert_eq!(iter.next_back(), None);
         assert_eq!(iter.next(), None);
     }
-
 }
